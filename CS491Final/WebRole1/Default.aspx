@@ -4,8 +4,14 @@
 
     <div class="jumbotron">
         <h1>CS 491 Cloud Share</h1>
-        <p>&nbsp;</p>
-        <input id="File1" type="file" /></div>
+        <p>
+            <asp:FileUpload ID="FileUpload1" runat="server" OnClick="FileUpload1_Click"/>
+        </p>
+        &nbsp;<input id="Submit1" type="submit" value="submit" />
+        <asp:Button ID="Button1" runat="server" OnClick="Button1_Click" Text="Button" />
+        <br />
+        <asp:Literal ID="Literal1" runat="server"></asp:Literal>
+    </div>
 
     <div class="row">
         <div class="col-md-4">
