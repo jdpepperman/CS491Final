@@ -22,13 +22,13 @@ namespace WebRole1 {
         protected global::System.Web.UI.WebControls.Panel Panel1;
         
         /// <summary>
-        /// CheckBoxList1 control.
+        /// CheckBoxList2 control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.CheckBoxList CheckBoxList1;
+        protected global::System.Web.UI.WebControls.CheckBoxList CheckBoxList2;
         
         /// <summary>
         /// FileUpload1 control.
@@ -58,13 +58,13 @@ namespace WebRole1 {
         protected global::System.Web.UI.WebControls.Literal Literal1;
         
         /// <summary>
-        /// CheckBoxList2 control.
+        /// CheckBoxList1 control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.CheckBoxList CheckBoxList2;
+        protected global::System.Web.UI.WebControls.CheckBoxList CheckBoxList1;
         
         /// <summary>
         /// Button2 control.
