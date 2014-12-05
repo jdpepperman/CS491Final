@@ -4,6 +4,7 @@ using System.Linq;
 using System.Web;
 using System.Web.UI;
 using System.Web.UI.WebControls;
+using System.Net;
 using System.IO;
 using Microsoft.WindowsAzure;
 using Microsoft.WindowsAzure.Storage;
@@ -169,6 +170,12 @@ namespace WebRole1
                 // Retrieve reference to a blob named "photo1.jpg".
                 CloudBlockBlob blockBlob = container.GetBlockBlobReference(selectedItem);
 
+                using (WebClient Client = new WebClient())
+                {
+                    Client.DownloadFile(blockBlob.Uri.AbsoluteUri, @"C:\Users\Joshua\Desktop\" + selectedItem);
+                }
+
+                /*
                 String pathUser = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile);
                 String pathDownload = Path.Combine(pathUser, "Downloads");
 
@@ -178,11 +185,16 @@ namespace WebRole1
 
                 String filepath = Path.Combine(pathDownload, selectedItem);//, selectedItem);v 
 
+                Literal1.Text = filepath;
+
                 // Save blob contents to a file.
-                using (var fileStream = System.IO.File.OpenWrite(@filepath))
+                using (Stream fileStream = System.IO.File.OpenWrite(@filepath))
                 {
+                    //blockBlob.DownloadToStream(fileStream);
                     blockBlob.DownloadToStream(fileStream);
+                    //fileStream.
                 }
+                 * */
             }
         }
 
