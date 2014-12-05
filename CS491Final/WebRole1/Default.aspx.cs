@@ -170,10 +170,19 @@ namespace WebRole1
                 // Retrieve reference to a blob named "photo1.jpg".
                 CloudBlockBlob blockBlob = container.GetBlockBlobReference(selectedItem);
 
-                using (WebClient Client = new WebClient())
-                {
-                    Client.DownloadFile(blockBlob.Uri.AbsoluteUri, @"C:\Users\Joshua\Desktop\" + selectedItem);
-                }
+                blockBlob.DownloadToFile(@"C:\Users\Joshua\Desktop\" + selectedItem, FileMode.Create);
+
+                //String text;
+                //using (var memoryStream = new MemoryStream())
+                //{
+                //    blockBlob.DownloadToStream(memoryStream);
+                //    text = System.Text.Encoding.UTF8.GetString(memoryStream.ToArray());
+                //}
+
+                //using (WebClient Client = new WebClient())
+                //{
+                //    Client.DownloadFile(text, @"C:\Users\Joshua\Desktop\" + selectedItem);
+                //}
 
                 /*
                 String pathUser = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile);
