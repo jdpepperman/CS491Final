@@ -7,10 +7,14 @@
         <p>
             <asp:FileUpload ID="FileUpload1" runat="server" OnClick="FileUpload1_Click"/>
         </p>
-        &nbsp;<input id="Submit1" type="submit" value="submit" />
-        <asp:Button ID="Button1" runat="server" OnClick="Button1_Click" Text="Button" />
+        &nbsp;
+        <asp:Button ID="Button1" runat="server" OnClick="Button1_Click" Text="Submit" />
         <br />
         <asp:Literal ID="Literal1" runat="server"></asp:Literal>
+        <br />
+        <br />
+        Current Files:<br />
+        <asp:ListBox ID="ListBox1" runat="server" Width="292px"></asp:ListBox>
     </div>
 
     <div class="row">
