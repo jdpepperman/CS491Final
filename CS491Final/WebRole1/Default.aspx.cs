@@ -26,6 +26,8 @@ namespace WebRole1
         protected void Button1_Click(object sender, EventArgs e)
         {
 
+
+
             if (FileUpload1.HasFile)
             {
                 String filename = FileUpload1.FileName;
@@ -40,7 +42,27 @@ namespace WebRole1
                 CloudBlobContainer container = blobClient.GetContainerReference("quicklap");
                 container.CreateIfNotExists();
 
+                CloudBlobContainer tagContainer = blobClient.GetContainerReference("tags");
+                tagContainer.CreateIfNotExists();
+
+
+                CloudBlockBlob tagBlob = tagContainer.GetBlockBlobReference(filename);
+
                 CloudBlockBlob blockBlob = blobContainer.GetBlockBlobReference(filename);
+
+                string tags = "";
+
+                //get tags for blob
+
+                foreach (ListItem item in CheckBoxList1.Items)
+                {
+                    if (item.Selected)
+                    {
+                        tags += item.Value;
+                    }
+                }
+
+                tagBlob.UploadText(tags);
 
                 using (var fileStream = FileUpload1.FileContent)
                 {
@@ -108,6 +130,10 @@ namespace WebRole1
 
             // Retrieve reference to a previously created container.
             CloudBlobContainer container = blobClient.GetContainerReference("quicklap");
+            CloudBlobContainer tagContainer = blobClient.GetContainerReference("tags");
+            string tags = "";
+            string filter = "";
+
             // Loop over items within the container and output the length and URI.
             foreach (IListBlobItem item in container.ListBlobs(null, false))
             {
@@ -115,13 +141,23 @@ namespace WebRole1
                 {
                     CloudBlockBlob blob = (CloudBlockBlob)item;
                     
-
+                    
                     //System.Diagnostics.Trace.WriteLine("Block blob of length " + blob.Name + " : " + blob.Uri);
-                    if (!fileListBox.Items.Contains(new ListItem(blob.Name)))
+
+                    foreach (ListItem box in CheckBoxList1.Items)
                     {
-                        fileListBox.Items.Add(new ListItem(blob.Name));
+                        if (box.Selected)
+                        {
+                            if (tags.Contains(box.Value.ToString()))
+                            {
+                                if (!fileListBox.Items.Contains(new ListItem(blob.Name)))
+                                {
+                                    fileListBox.Items.Add(new ListItem(blob.Name));
+                                }
+                            }
+                        }
                     }
-                  
+
                 }
                 else if (item.GetType() == typeof(CloudPageBlob))
                 {
@@ -177,15 +213,16 @@ namespace WebRole1
 
         protected void btnRandom_Click(object sender, EventArgs e)
         {
-             
-            Literal lit = new Literal();
-            lit.Text = @"
-            <input id='FileInput' runat='server' type='file' />";
 
-            FileUpload newFileupload = new FileUpload();
-           // newFileupload.ApplyStyle();
+        }
 
-            Panel1.Controls.Add(lit);
+        protected void CheckBoxList1_SelectedIndexChanged(object sender, EventArgs e)
+        {
+
+        }
+
+        protected void CheckBoxList2_SelectedIndexChanged(object sender, EventArgs e)
+        {
 
         }
 
