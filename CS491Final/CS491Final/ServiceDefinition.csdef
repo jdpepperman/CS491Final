@@ -13,6 +13,7 @@
     </Endpoints>
     <ConfigurationSettings>
       <Setting name="localhost" />
+      <Setting name="cloudcomputing" />
     </ConfigurationSettings>
   </WebRole>
 </ServiceDefinition>
