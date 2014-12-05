@@ -4,6 +4,7 @@ using System.Linq;
 using System.Web;
 using System.Web.UI;
 using System.Web.UI.WebControls;
+using System.IO;
 using Microsoft.WindowsAzure;
 using Microsoft.WindowsAzure.Storage;
 using Microsoft.WindowsAzure.ServiceRuntime;
@@ -56,11 +57,8 @@ namespace WebRole1
         //delete
         protected void Button2_Click(object sender, EventArgs e)
         {
-            //Label1.Text = fileListBox.Items.Count.ToString();
-            //Literal1.Text = "Button2 clicked.";
             if (selectedItem != "")
             {
-                Literal1.Text = "list item not null";
                 // Retrieve storage account from connection string.
                 CloudStorageAccount storageAccount = CloudStorageAccount.Parse(
                     CloudConfigurationManager.GetSetting("localhost"));
@@ -72,13 +70,14 @@ namespace WebRole1
                 CloudBlobContainer container = blobClient.GetContainerReference("quicklap");
 
                 // Retrieve reference to a blob named "myblob.txt".
-                System.Diagnostics.Trace.WriteLine("Blob name to DELETE: " + selectedItem);
-                Literal1.Text = selectedItem;
+                //System.Diagnostics.Trace.WriteLine("Blob name to DELETE: " + selectedItem);
+                //Literal1.Text = selectedItem;
                 CloudBlockBlob blockBlob = container.GetBlockBlobReference(selectedItem);
 
                 // Delete the blob.
                 blockBlob.Delete();
-                //refreshFileList();
+                fileListBox.Items.Clear();
+                refreshFileList();
             }
         }
 
@@ -107,27 +106,25 @@ namespace WebRole1
                     CloudBlockBlob blob = (CloudBlockBlob)item;
                     
 
-                    System.Diagnostics.Trace.WriteLine("Block blob of length " + blob.Name + " : " + blob.Uri);
+                    //System.Diagnostics.Trace.WriteLine("Block blob of length " + blob.Name + " : " + blob.Uri);
                     if (!fileListBox.Items.Contains(new ListItem(blob.Name)))
                     {
                         fileListBox.Items.Add(new ListItem(blob.Name));
                     }
-                    
-                    
-
+                  
                 }
                 else if (item.GetType() == typeof(CloudPageBlob))
                 {
                     CloudPageBlob pageBlob = (CloudPageBlob)item;
 
-                    System.Diagnostics.Trace.WriteLine("Page blob of length " + pageBlob.Properties.Length + " : " + pageBlob.Uri);
+                    //System.Diagnostics.Trace.WriteLine("Page blob of length " + pageBlob.Properties.Length + " : " + pageBlob.Uri);
 
                 }
                 else if (item.GetType() == typeof(CloudBlobDirectory))
                 {
                     CloudBlobDirectory directory = (CloudBlobDirectory)item;
 
-                    System.Diagnostics.Trace.WriteLine("Directory: " + directory.Uri);
+                    //System.Diagnostics.Trace.WriteLine("Directory: " + directory.Uri);
                 }
             }
            
@@ -135,11 +132,33 @@ namespace WebRole1
 
         protected void fileListBox_SelectedIndexChanged(object sender, EventArgs e)
         {
-            //fileListBox.Focus();
-            Label1.Text = fileListBox.SelectedIndex.ToString();
-            //fileListBox.Focus();
-            //refreshFileList();
-           //if (fileListBox.SelectedItem != null) selectedItem = fileListBox.SelectedItem.Text;
+            if (fileListBox.SelectedItem != null) selectedItem = fileListBox.SelectedItem.Text;
+        }
+
+        protected void Button3_Click(object sender, EventArgs e)
+        {
+            if (selectedItem != "")
+            {
+                // Retrieve storage account from connection string.
+                CloudStorageAccount storageAccount = CloudStorageAccount.Parse(
+                    CloudConfigurationManager.GetSetting("localhost"));
+
+                // Create the blob client.
+                CloudBlobClient blobClient = storageAccount.CreateCloudBlobClient();
+
+                // Retrieve reference to a previously created container.
+                CloudBlobContainer container = blobClient.GetContainerReference("quicklap");
+
+                // Retrieve reference to a blob named "photo1.jpg".
+                CloudBlockBlob blockBlob = container.GetBlockBlobReference(selectedItem);
+
+                var filepath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Desktop));//, selectedItem);
+                // Save blob contents to a file.
+                using (var fileStream = System.IO.File.OpenWrite(@filepath))
+                {
+                    blockBlob.DownloadToStream(fileStream);
+                }
+            }
         }
 
 
