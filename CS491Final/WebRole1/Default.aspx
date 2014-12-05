@@ -14,7 +14,9 @@
         <br />
         <br />
         Current Files:<br />
-        <asp:ListBox ID="ListBox1" runat="server" Width="292px"></asp:ListBox>
+        <asp:ListBox ID="fileListBox" runat="server" Width="292px" OnSelectedIndexChanged="fileListBox_SelectedIndexChanged" />
+        <asp:Button ID="Button2" runat="server" Text="Button" OnClick="Button2_Click"/>
+        <asp:Label ID="Label1" runat="server" Text="Label"></asp:Label>
     </div>
 
     <div class="row">

@@ -1,5 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
+using System.Collections;
 using System.Linq;
 using System.Web;
 using System.Web.UI;
@@ -14,6 +14,8 @@ namespace WebRole1
 {
     public partial class _Default : Page
     {
+        String selectedItem = "";
+
         protected void Page_Load(object sender, EventArgs e)
         {
             refreshFileList();
@@ -51,6 +53,35 @@ namespace WebRole1
 
         }
 
+        //delete
+        protected void Button2_Click(object sender, EventArgs e)
+        {
+            //Label1.Text = fileListBox.Items.Count.ToString();
+            //Literal1.Text = "Button2 clicked.";
+            if (selectedItem != "")
+            {
+                Literal1.Text = "list item not null";
+                // Retrieve storage account from connection string.
+                CloudStorageAccount storageAccount = CloudStorageAccount.Parse(
+                    CloudConfigurationManager.GetSetting("localhost"));
+
+                // Create the blob client.
+                CloudBlobClient blobClient = storageAccount.CreateCloudBlobClient();
+
+                // Retrieve reference to a previously created container.
+                CloudBlobContainer container = blobClient.GetContainerReference("quicklap");
+
+                // Retrieve reference to a blob named "myblob.txt".
+                System.Diagnostics.Trace.WriteLine("Blob name to DELETE: " + selectedItem);
+                Literal1.Text = selectedItem;
+                CloudBlockBlob blockBlob = container.GetBlockBlobReference(selectedItem);
+
+                // Delete the blob.
+                blockBlob.Delete();
+                //refreshFileList();
+            }
+        }
+
         protected void FileUpload_Click(object sender, EventArgs e)
         {
 
@@ -68,8 +99,6 @@ namespace WebRole1
 
             // Retrieve reference to a previously created container.
             CloudBlobContainer container = blobClient.GetContainerReference("quicklap");
-
-            ListBox1.Items.Clear();
             // Loop over items within the container and output the length and URI.
             foreach (IListBlobItem item in container.ListBlobs(null, false))
             {
@@ -79,7 +108,12 @@ namespace WebRole1
                     
 
                     System.Diagnostics.Trace.WriteLine("Block blob of length " + blob.Name + " : " + blob.Uri);
-                    ListBox1.Items.Add(blob.Name);
+                    if (!fileListBox.Items.Contains(new ListItem(blob.Name)))
+                    {
+                        fileListBox.Items.Add(new ListItem(blob.Name));
+                    }
+                    
+                    
 
                 }
                 else if (item.GetType() == typeof(CloudPageBlob))
@@ -96,6 +130,16 @@ namespace WebRole1
                     System.Diagnostics.Trace.WriteLine("Directory: " + directory.Uri);
                 }
             }
+           
+        }
+
+        protected void fileListBox_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            //fileListBox.Focus();
+            Label1.Text = fileListBox.SelectedIndex.ToString();
+            //fileListBox.Focus();
+            //refreshFileList();
+           //if (fileListBox.SelectedItem != null) selectedItem = fileListBox.SelectedItem.Text;
         }
 
 
