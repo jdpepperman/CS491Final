@@ -152,7 +152,10 @@ namespace WebRole1
                 // Retrieve reference to a blob named "photo1.jpg".
                 CloudBlockBlob blockBlob = container.GetBlockBlobReference(selectedItem);
 
-                var filepath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Desktop));//, selectedItem);
+                String pathUser = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile);
+                String pathDownload = Path.Combine(pathUser, "Downloads");
+
+                String filepath = Path.Combine(pathDownload, selectedItem);//, selectedItem);
                 // Save blob contents to a file.
                 using (var fileStream = System.IO.File.OpenWrite(@filepath))
                 {
