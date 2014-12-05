@@ -20,6 +20,7 @@ namespace WebRole1
         protected void Page_Load(object sender, EventArgs e)
         {
             refreshFileList();
+            this.Header.DataBind();
         }
 
         protected void Button1_Click(object sender, EventArgs e)
@@ -50,7 +51,16 @@ namespace WebRole1
                 System.Diagnostics.Trace.WriteLine("Added blob to Azure Storage");
                 refreshFileList();
 
+         
+                    Literal lit = new Literal();
+                    lit.Text = @"<div class='alert alert-dismissable alert-success'> <button type='button' class='close' data-dismiss='alert'>×</button>
+                 <strong>Success!</strong> File <a href='#' class='alert-link'>" + filename + "</a> was uploaded.</div>";
+
+                    Panel1.Controls.Add(lit);
+                
+               
             }
+            
 
         }
 
@@ -155,13 +165,28 @@ namespace WebRole1
                 String pathUser = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile);
                 String pathDownload = Path.Combine(pathUser, "Downloads");
 
-                String filepath = Path.Combine(pathDownload, selectedItem);//, selectedItem);
+                String filepath = Path.Combine(pathDownload, selectedItem);//, selectedItem);v 
+
                 // Save blob contents to a file.
                 using (var fileStream = System.IO.File.OpenWrite(@filepath))
                 {
                     blockBlob.DownloadToStream(fileStream);
                 }
             }
+        }
+
+        protected void btnRandom_Click(object sender, EventArgs e)
+        {
+             
+            Literal lit = new Literal();
+            lit.Text = @"
+            <input id='FileInput' runat='server' type='file' />";
+
+            FileUpload newFileupload = new FileUpload();
+           // newFileupload.ApplyStyle();
+
+            Panel1.Controls.Add(lit);
+
         }
 
 
