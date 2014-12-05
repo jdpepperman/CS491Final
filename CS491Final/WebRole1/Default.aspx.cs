@@ -16,6 +16,7 @@ namespace WebRole1
     public partial class _Default : Page
     {
         String selectedItem = "";
+        String connectionString = "cloudcomputing";
 
         protected void Page_Load(object sender, EventArgs e)
         {
@@ -30,7 +31,7 @@ namespace WebRole1
             {
                 String filename = FileUpload1.FileName;
                 // Setup the connection to Azure Storage
-                var storageAccount = CloudStorageAccount.Parse(RoleEnvironment.GetConfigurationSettingValue("localhost"));
+                var storageAccount = CloudStorageAccount.Parse(RoleEnvironment.GetConfigurationSettingValue(connectionString));
                 var blobClient = storageAccount.CreateCloudBlobClient();
                 // Get and create the container
                 var blobContainer = blobClient.GetContainerReference("quicklap");
@@ -71,7 +72,7 @@ namespace WebRole1
             {
                 // Retrieve storage account from connection string.
                 CloudStorageAccount storageAccount = CloudStorageAccount.Parse(
-                    CloudConfigurationManager.GetSetting("localhost"));
+                    CloudConfigurationManager.GetSetting(connectionString));
 
                 // Create the blob client.
                 CloudBlobClient blobClient = storageAccount.CreateCloudBlobClient();
@@ -101,40 +102,44 @@ namespace WebRole1
         {
             // Retrieve storage account from connection string.
             CloudStorageAccount storageAccount = CloudStorageAccount.Parse(
-            CloudConfigurationManager.GetSetting("localhost"));
+            CloudConfigurationManager.GetSetting(connectionString));
 
             // Create the blob client. 
             CloudBlobClient blobClient = storageAccount.CreateCloudBlobClient();
 
             // Retrieve reference to a previously created container.
             CloudBlobContainer container = blobClient.GetContainerReference("quicklap");
-            // Loop over items within the container and output the length and URI.
-            foreach (IListBlobItem item in container.ListBlobs(null, false))
+
+            if (container.ListBlobs(null, false) != null)
             {
-                if (item.GetType() == typeof(CloudBlockBlob))
+                // Loop over items within the container and output the length and URI.
+                foreach (IListBlobItem item in container.ListBlobs(null, false))
                 {
-                    CloudBlockBlob blob = (CloudBlockBlob)item;
-                    
-
-                    //System.Diagnostics.Trace.WriteLine("Block blob of length " + blob.Name + " : " + blob.Uri);
-                    if (!fileListBox.Items.Contains(new ListItem(blob.Name)))
+                    if (item.GetType() == typeof(CloudBlockBlob))
                     {
-                        fileListBox.Items.Add(new ListItem(blob.Name));
+                        CloudBlockBlob blob = (CloudBlockBlob)item;
+
+
+                        //System.Diagnostics.Trace.WriteLine("Block blob of length " + blob.Name + " : " + blob.Uri);
+                        if (!fileListBox.Items.Contains(new ListItem(blob.Name)))
+                        {
+                            fileListBox.Items.Add(new ListItem(blob.Name));
+                        }
+
                     }
-                  
-                }
-                else if (item.GetType() == typeof(CloudPageBlob))
-                {
-                    CloudPageBlob pageBlob = (CloudPageBlob)item;
+                    else if (item.GetType() == typeof(CloudPageBlob))
+                    {
+                        CloudPageBlob pageBlob = (CloudPageBlob)item;
 
-                    //System.Diagnostics.Trace.WriteLine("Page blob of length " + pageBlob.Properties.Length + " : " + pageBlob.Uri);
+                        //System.Diagnostics.Trace.WriteLine("Page blob of length " + pageBlob.Properties.Length + " : " + pageBlob.Uri);
 
-                }
-                else if (item.GetType() == typeof(CloudBlobDirectory))
-                {
-                    CloudBlobDirectory directory = (CloudBlobDirectory)item;
+                    }
+                    else if (item.GetType() == typeof(CloudBlobDirectory))
+                    {
+                        CloudBlobDirectory directory = (CloudBlobDirectory)item;
 
-                    //System.Diagnostics.Trace.WriteLine("Directory: " + directory.Uri);
+                        //System.Diagnostics.Trace.WriteLine("Directory: " + directory.Uri);
+                    }
                 }
             }
            
@@ -151,7 +156,7 @@ namespace WebRole1
             {
                 // Retrieve storage account from connection string.
                 CloudStorageAccount storageAccount = CloudStorageAccount.Parse(
-                    CloudConfigurationManager.GetSetting("localhost"));
+                    CloudConfigurationManager.GetSetting(connectionString));
 
                 // Create the blob client.
                 CloudBlobClient blobClient = storageAccount.CreateCloudBlobClient();
