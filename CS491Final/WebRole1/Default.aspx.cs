@@ -43,6 +43,7 @@ namespace WebRole1
 
                 CloudBlockBlob blockBlob = blobContainer.GetBlockBlobReference(filename);
 
+
                 using (var fileStream = FileUpload1.FileContent)
                 {
                     blockBlob.UploadFromStream(fileStream);
@@ -119,12 +120,13 @@ namespace WebRole1
                     {
                         CloudBlockBlob blob = (CloudBlockBlob)item;
 
-
-                        //System.Diagnostics.Trace.WriteLine("Block blob of length " + blob.Name + " : " + blob.Uri);
+                    //System.Diagnostics.Trace.WriteLine("Block blob of length " + blob.Name + " : " + blob.Uri);
                         if (!fileListBox.Items.Contains(new ListItem(blob.Name)))
-                        {
-                            fileListBox.Items.Add(new ListItem(blob.Name));
-                        }
+                            {
+                                fileListBox.Items.Add(new ListItem(blob.Name));
+                            }
+
+                        
 
                     }
                     else if (item.GetType() == typeof(CloudPageBlob))
@@ -170,6 +172,10 @@ namespace WebRole1
                 String pathUser = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile);
                 String pathDownload = Path.Combine(pathUser, "Downloads");
 
+
+                pathDownload = TextBox1.Text;
+                Literal1.Text = TextBox1.Text;
+
                 String filepath = Path.Combine(pathDownload, selectedItem);//, selectedItem);v 
 
                 // Save blob contents to a file.
@@ -191,6 +197,11 @@ namespace WebRole1
            // newFileupload.ApplyStyle();
 
             Panel1.Controls.Add(lit);
+
+        }
+
+        protected void TextBox1_TextChanged(object sender, EventArgs e)
+        {
 
         }
 

@@ -13,6 +13,8 @@
    
            <asp:Panel id="Panel1" runat="server"
             BackColor="transparent">
+
+               <br />
                     <asp:FileUpload ID="FileUpload1" runat="server" OnClick="FileUpload1_Click"/>
                      &nbsp;
                      <asp:Button ID="Button1" runat="server" OnClick="Button1_Click" Text="Submit" />
@@ -25,11 +27,7 @@
         <br />
         <h2>Current Files:</h2> <br />
         <div class="well"> 
-            <asp:CheckBoxList ID="CheckBoxList1" runat="server">
-                <asp:ListItem>Image</asp:ListItem>
-                <asp:ListItem>Text</asp:ListItem>
-                <asp:ListItem>Other</asp:ListItem>
-            </asp:CheckBoxList>
+            <asp:TextBox ID="TextBox1" runat="server" OnTextChanged="TextBox1_TextChanged"></asp:TextBox>
             <br />
 
             <div class="btn-group btn-group-vertical">
