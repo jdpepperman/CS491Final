@@ -13,16 +13,6 @@
    
            <asp:Panel id="Panel1" runat="server"
             BackColor="transparent">
-
-               <asp:CheckBoxList ID="CheckBoxList1" runat="server" OnSelectedIndexChanged="CheckBoxList1_SelectedIndexChanged">
-                   <asp:ListItem Value="S">School</asp:ListItem>
-                   <asp:ListItem Value="W">Work</asp:ListItem>
-                   <asp:ListItem Value="F">Fun</asp:ListItem>
-                   <asp:ListItem Value="O">Other</asp:ListItem>
-                   <asp:ListItem Value="C">Clouds</asp:ListItem>
-               </asp:CheckBoxList>
-
-               <br />
                     <asp:FileUpload ID="FileUpload1" runat="server" OnClick="FileUpload1_Click"/>
                      &nbsp;
                      <asp:Button ID="Button1" runat="server" OnClick="Button1_Click" Text="Submit" />
@@ -35,12 +25,10 @@
         <br />
         <h2>Current Files:</h2> <br />
         <div class="well"> 
-            <asp:CheckBoxList ID="CheckBoxList2" runat="server" OnSelectedIndexChanged="CheckBoxList2_SelectedIndexChanged">
-                <asp:ListItem Value="S">School</asp:ListItem>
-                <asp:ListItem Value="W">Work</asp:ListItem>
-                <asp:ListItem Value="F">Fun</asp:ListItem>
-                <asp:ListItem Value="O">Other</asp:ListItem>
-                <asp:ListItem Value="C">Clouds</asp:ListItem>
+            <asp:CheckBoxList ID="CheckBoxList1" runat="server">
+                <asp:ListItem>Image</asp:ListItem>
+                <asp:ListItem>Text</asp:ListItem>
+                <asp:ListItem>Other</asp:ListItem>
             </asp:CheckBoxList>
             <br />
 
@@ -61,6 +49,11 @@
        </div>
     <div class="row">
 
+
+        <div class="alert alert-dismissable alert-success">
+          <button type="button" class="close" data-dismiss="alert">×</button>
+             <strong>Well done!</strong> You successfully read <a href="#" class="alert-link">this important alert message</a>.
+        </div>
 
                         <asp:LinkButton ID="btnRandom" 
                  runat="server" 
