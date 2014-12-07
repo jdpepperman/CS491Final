@@ -55,6 +55,7 @@
   </ItemGroup>
   <ItemGroup>
     <PublishProfile Include="Profiles\cloudcomputing491Production.azurePubxml" />
+    <PublishProfile Include="Profiles\cloudcomputing491Production1.azurePubxml" />
   </ItemGroup>
   <!-- Import the target files for this project template -->
   <PropertyGroup>

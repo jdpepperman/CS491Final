@@ -14,10 +14,14 @@ using Microsoft.WindowsAzure.Storage.Blob;
 
 namespace WebRole1
 {
+    
     public partial class _Default : Page
     {
         String selectedItem = "";
         String connectionString = "cloudcomputing";
+
+        //String connectionString = "localhost";
+        string search = "";
 
         protected void Page_Load(object sender, EventArgs e)
         {
@@ -44,11 +48,25 @@ namespace WebRole1
 
                 CloudBlockBlob blockBlob = blobContainer.GetBlockBlobReference(filename);
 
-
                 using (var fileStream = FileUpload1.FileContent)
                 {
                     blockBlob.UploadFromStream(fileStream);
-                } 
+                }
+
+
+                CloudBlobContainer accountContainer = blobClient.GetContainerReference("listing");
+                accountContainer.CreateIfNotExists();
+
+                CloudBlockBlob userBlob =  accountContainer.GetBlockBlobReference(filename);
+                
+                if (uploadType.Text.Contains("0"))
+                {
+                    userBlob.UploadText("public");
+                }
+                else if (uploadType.Text.Contains("1"))
+                {
+                    userBlob.UploadText("unlisted");
+                }
 
                 // log a message that can be viewed in the diagnostics tables called WADLogsTable
                 System.Diagnostics.Trace.WriteLine("Added blob to Azure Storage");
@@ -102,30 +120,89 @@ namespace WebRole1
 
         protected void refreshFileList()
         {
+
+            //Literal1.Text = TextBox1.Text;
             // Retrieve storage account from connection string.
             CloudStorageAccount storageAccount = CloudStorageAccount.Parse(
             CloudConfigurationManager.GetSetting(connectionString));
-
             // Create the blob client. 
             CloudBlobClient blobClient = storageAccount.CreateCloudBlobClient();
 
             // Retrieve reference to a previously created container.
             CloudBlobContainer container = blobClient.GetContainerReference("quicklap");
 
+            // Retrieve reference to a previously created container.
+            
+            CloudBlobContainer listContainer = blobClient.GetContainerReference("listing");
+
+            
+
             if (container.ListBlobs(null, false) != null)
             {
                 // Loop over items within the container and output the length and URI.
                 foreach (IListBlobItem item in container.ListBlobs(null, false))
                 {
+
                     if (item.GetType() == typeof(CloudBlockBlob))
                     {
+
+
                         CloudBlockBlob blob = (CloudBlockBlob)item;
 
-                    //System.Diagnostics.Trace.WriteLine("Block blob of length " + blob.Name + " : " + blob.Uri);
+                        string text = "";
+                        if (listContainer.GetBlockBlobReference(blob.Name).Exists())
+                        {
+                            using (var memoryStream = new MemoryStream())
+                            {
+                                //text
+                                listContainer.GetBlockBlobReference(blob.Name).DownloadToStream(memoryStream);
+                                text = System.Text.Encoding.UTF8.GetString(memoryStream.ToArray());
+                            }
+
+                        }
+
+                        //System.Diagnostics.Trace.WriteLine("Block blob of length " + blob.Name + " : " + blob.Uri);
                         if (!fileListBox.Items.Contains(new ListItem(blob.Name)))
                             {
-                                fileListBox.Items.Add(new ListItem(blob.Name));
+                                //check if plubic mode
+                                if (!uploadType.Text.Contains("1"))
+                                {
+                                    //item is public
+                                    if (!text.Equals("unlisted"))
+                                    {
+                                        fileListBox.Items.Add(new ListItem(blob.Name));
+                                    }
+                                }
+                                else
+                                {
+                                    //Remove unlisted items
+                                    fileListBox.Items.Remove(new ListItem(blob.Name));
+                                }
+
                             }
+                        //Remove Items
+                        if (!uploadType.Text.Contains("1"))
+                        {
+                            if (!blob.Name.Contains(TextBox1.Text) && !TextBox1.Text.Equals(""))
+                            {
+                                if (fileListBox.Items.Contains(new ListItem(blob.Name)))
+                                     fileListBox.Items.Remove(new ListItem(blob.Name));
+                            }
+                        }
+                        else
+                        {
+                            if (fileListBox.Items.Contains(new ListItem(blob.Name)))
+                                 fileListBox.Items.Remove(new ListItem(blob.Name));
+
+                            if (text.Contains("unlisted"))
+                            {
+                                if (blob.Name.Contains(TextBox1.Text) && TextBox1.Text.Length > 3)
+                                {
+                                    if (!fileListBox.Items.Contains(new ListItem(blob.Name)))
+                                        fileListBox.Items.Add(new ListItem(blob.Name));
+                                }
+                            }
+                        }
 
                         
 
@@ -153,9 +230,11 @@ namespace WebRole1
             if (fileListBox.SelectedItem != null) selectedItem = fileListBox.SelectedItem.Text;
         }
 
+        //download
         protected void Button3_Click(object sender, EventArgs e)
         {
-            if (selectedItem != "")
+
+           if (selectedItem != "")
             {
                 // Retrieve storage account from connection string.
                 CloudStorageAccount storageAccount = CloudStorageAccount.Parse(
@@ -170,60 +249,38 @@ namespace WebRole1
                 // Retrieve reference to a blob named "photo1.jpg".
                 CloudBlockBlob blockBlob = container.GetBlockBlobReference(selectedItem);
 
-                blockBlob.DownloadToFile(@"C:\Users\Joshua\Desktop\" + selectedItem, FileMode.Create);
+               // blockBlob.DownloadToFile(@"C:\Users\Joshua\Desktop\" + selectedItem, FileMode.Create);
 
-                //String text;
-                //using (var memoryStream = new MemoryStream())
-                //{
-                //    blockBlob.DownloadToStream(memoryStream);
-                //    text = System.Text.Encoding.UTF8.GetString(memoryStream.ToArray());
-                //}
+                MemoryStream other = new MemoryStream();
 
-                //using (WebClient Client = new WebClient())
-                //{
-                //    Client.DownloadFile(text, @"C:\Users\Joshua\Desktop\" + selectedItem);
-                //}
+                Response.ClearContent();
 
-                /*
-                String pathUser = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile);
-                String pathDownload = Path.Combine(pathUser, "Downloads");
+                Response.ContentType = blockBlob.Properties.ContentType; //contentType: html, pdf, jpg, doc, txt, etc...
+                Response.AddHeader("content-disposition", "attachment; filename=" + blockBlob.Name);
 
+                blockBlob.DownloadToStream(other);//from blob to stream
+                other.WriteTo(Response.OutputStream);//stream to browser download
 
-                pathDownload = TextBox1.Text;
-                Literal1.Text = TextBox1.Text;
+                Response.Flush();
+                Response.End();
 
-                String filepath = Path.Combine(pathDownload, selectedItem);//, selectedItem);v 
-
-                Literal1.Text = filepath;
-
-                // Save blob contents to a file.
-                using (Stream fileStream = System.IO.File.OpenWrite(@filepath))
-                {
-                    //blockBlob.DownloadToStream(fileStream);
-                    blockBlob.DownloadToStream(fileStream);
-                    //fileStream.
-                }
-                 * */
             }
         }
 
-        protected void btnRandom_Click(object sender, EventArgs e)
+        protected void private_Click(object sender, EventArgs e)
         {
-             
-            Literal lit = new Literal();
-            lit.Text = @"
-            <input id='FileInput' runat='server' type='file' />";
-
-            FileUpload newFileupload = new FileUpload();
-           // newFileupload.ApplyStyle();
-
-            Panel1.Controls.Add(lit);
-
+            uploadType.Text = ""+1;
         }
 
-        protected void TextBox1_TextChanged(object sender, EventArgs e)
+        protected void public_Click(object sender, EventArgs e)
         {
+            uploadType.Text = ""+0;
+        }
 
+        protected void refreshButton(object sender, EventArgs e)
+        {
+            search = TextBox1.Text;
+            refreshFileList();
         }
 
 
