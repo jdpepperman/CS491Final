@@ -46,6 +46,17 @@ namespace WebRole1
                 CloudBlobContainer container = blobClient.GetContainerReference("quicklap");
                 container.CreateIfNotExists();
 
+                if (container.GetBlockBlobReference(filename).Exists())
+                {
+                    Literal popup = new Literal();
+                    popup.Text = @"<div class='alert alert-dismissable alert-warning'> <button type='button' class='close' data-dismiss='alert'>×</button>
+                 <strong>Success!</strong> File <a href='#' class='alert-link'>" + filename + "</a> already exists.</div>";
+
+                    Panel1.Controls.Add(popup);
+
+                    return;
+                }
+
                 CloudBlockBlob blockBlob = blobContainer.GetBlockBlobReference(filename);
 
                 using (var fileStream = FileUpload1.FileContent)
@@ -88,7 +99,7 @@ namespace WebRole1
         //delete
         protected void Button2_Click(object sender, EventArgs e)
         {
-            if (selectedItem != "")
+            if (selects.Text != "")
             {
                 // Retrieve storage account from connection string.
                 CloudStorageAccount storageAccount = CloudStorageAccount.Parse(
@@ -103,12 +114,19 @@ namespace WebRole1
                 // Retrieve reference to a blob named "myblob.txt".
                 //System.Diagnostics.Trace.WriteLine("Blob name to DELETE: " + selectedItem);
                 //Literal1.Text = selectedItem;
-                CloudBlockBlob blockBlob = container.GetBlockBlobReference(selectedItem);
+                CloudBlockBlob blockBlob = container.GetBlockBlobReference(selects.Text);
 
                 // Delete the blob.
+                String name = blockBlob.Name;
                 blockBlob.Delete();
                 fileListBox.Items.Clear();
                 refreshFileList();
+
+                Literal lit = new Literal();
+                lit.Text = @"<div class='alert alert-dismissable alert-danger'> <button type='button' class='close' data-dismiss='alert'>×</button>
+                 <strong>Success!</strong> File <a href='#' class='alert-link'>" + name + "</a> was deleted.</div>";
+
+                Panel1.Controls.Add(lit);
             }
         }
 
@@ -134,7 +152,7 @@ namespace WebRole1
             // Retrieve reference to a previously created container.
             
             CloudBlobContainer listContainer = blobClient.GetContainerReference("listing");
-
+            updatePls();
             
 
             if (container.ListBlobs(null, false) != null)
@@ -172,11 +190,15 @@ namespace WebRole1
                                     {
                                         fileListBox.Items.Add(new ListItem(blob.Name));
                                     }
+                                    else
+                                    {
+                                        if (fileListBox.Items.Contains(new ListItem(blob.Name)))
+                                            fileListBox.Items.Remove(new ListItem(blob.Name));
+                                    }
                                 }
                                 else
                                 {
                                     //Remove unlisted items
-                                    fileListBox.Items.Remove(new ListItem(blob.Name));
                                 }
 
                             }
@@ -196,7 +218,7 @@ namespace WebRole1
 
                             if (text.Contains("unlisted"))
                             {
-                                if (blob.Name.Contains(TextBox1.Text) && TextBox1.Text.Length > 3)
+                                if (blob.Name.Contains(TextBox1.Text) && TextBox1.Text.Length > 4)
                                 {
                                     if (!fileListBox.Items.Contains(new ListItem(blob.Name)))
                                         fileListBox.Items.Add(new ListItem(blob.Name));
@@ -227,14 +249,18 @@ namespace WebRole1
 
         protected void fileListBox_SelectedIndexChanged(object sender, EventArgs e)
         {
-            if (fileListBox.SelectedItem != null) selectedItem = fileListBox.SelectedItem.Text;
+            if (fileListBox.SelectedItem != null && fileListBox.SelectedItem.Text != "")
+            {
+                selectedItem = fileListBox.SelectedItem.Text;
+                selects.Text = fileListBox.SelectedItem.Text;
+            }
         }
 
         //download
         protected void Button3_Click(object sender, EventArgs e)
         {
 
-           if (selectedItem != "")
+           if (selects.Text!= "")
             {
                 // Retrieve storage account from connection string.
                 CloudStorageAccount storageAccount = CloudStorageAccount.Parse(
@@ -247,7 +273,7 @@ namespace WebRole1
                 CloudBlobContainer container = blobClient.GetContainerReference("quicklap");
 
                 // Retrieve reference to a blob named "photo1.jpg".
-                CloudBlockBlob blockBlob = container.GetBlockBlobReference(selectedItem);
+                CloudBlockBlob blockBlob = container.GetBlockBlobReference(selects.Text);
 
                // blockBlob.DownloadToFile(@"C:\Users\Joshua\Desktop\" + selectedItem, FileMode.Create);
 
@@ -270,17 +296,31 @@ namespace WebRole1
         protected void private_Click(object sender, EventArgs e)
         {
             uploadType.Text = ""+1;
+            selects.Text = "";
+            refreshFileList();
         }
 
         protected void public_Click(object sender, EventArgs e)
         {
             uploadType.Text = ""+0;
+            selects.Text = "";
+            refreshFileList();
         }
 
         protected void refreshButton(object sender, EventArgs e)
         {
             search = TextBox1.Text;
+
             refreshFileList();
+        }
+
+        protected void updatePls()
+        {
+            if (fileListBox.SelectedItem != null && fileListBox.SelectedItem.Text != "")
+            {
+                selectedItem = fileListBox.SelectedItem.Text;
+                selects.Text = fileListBox.SelectedItem.Text;
+            }
         }
 
 

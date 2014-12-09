@@ -3,13 +3,13 @@
 
 <asp:Content ID="BodyContent" ContentPlaceHolderID="MainContent" runat="server">
 
-    <div class="jumbotron">
-        <h1>CS 491 Cloud Share</h1>
+    <div class="jumbotron" style="text-align:center" >
+        <h1 >CS 491 Cloudapp</h1>
             </div>
 
     <div class="row">
-
-        <div class="col-md-8">
+        <div class="col-md-2"></div>
+        <div class="col-md-4">
    
            <asp:Panel id="Panel1" runat="server"
             BackColor="transparent">
@@ -64,7 +64,7 @@
            
              <asp:ListBox ID="fileListBox" runat="server" Width="292px" 
                  OnSelectedIndexChanged="fileListBox_SelectedIndexChanged" 
-                 Height="76px"
+                 Height="173px"
                 EnableTheming ="true"
                  ForeColor ="DarkCyan" />
 
@@ -116,8 +116,10 @@
             </div>
 
         </div>
+             <br /> <br />
         <asp:Literal ID="uploadType" runat="server" Visible="False" Text="0"></asp:Literal>
-        <br />
+        <asp:Literal ID="selects" runat="server" Visible="False" Text="asadfafd"></asp:Literal>
+        <br /> <br /> <br /> 
         <br />
        </div>
         
